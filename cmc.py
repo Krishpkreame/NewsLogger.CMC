@@ -169,9 +169,9 @@ class API:
                         unformatted.click()
                         # Wait for the news content to load
                         self.cmc.implicitly_wait(3)
-                        # Get the news content
+                        # Get the news contents
                         self.news_item_content = self.cmc.find_element(
-                            By.CLASS_NAME, 'news-contents').text.split("---")[0]
+                            By.CLASS_NAME, 'news-contents').text
                         # Wait before closing the news
                         self.cmc.implicitly_wait(2)
                         # Get the close buttons after opening the news
