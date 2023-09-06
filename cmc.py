@@ -168,7 +168,7 @@ class API:
                     try:
                         unformatted.click()
                         # Wait for the news content to load
-                        self.cmc.implicitly_wait(2)
+                        self.cmc.implicitly_wait(3)
                         # Get the news content
                         self.news_item_content = self.cmc.find_element(
                             By.CLASS_NAME, 'news-contents').text.split("---")[-1]
@@ -179,14 +179,18 @@ class API:
                             By.CLASS_NAME, 'window-header__action-button ')
 
                         # Find all buttons that were not there before opening the news
-                        for crnt_button in list(set(close_buttons_before) ^ set(close_buttons_after)):
-                            # Do 2 children down, (workaround because of bug in selenium)
-                            temp = crnt_button.find_element(
-                                By.XPATH, "*").find_element(
-                                By.XPATH, "*")
-                            # If the button is the close button, click it
-                            if ("close" in str(temp.get_attribute("class"))):
-                                temp.click()
+                        try:  # Sometimes the button is not found or clickable, so catch exception
+                            for crnt_button in list(set(close_buttons_before) ^ set(close_buttons_after)):
+                                # Do 2 children down, (workaround because of bug in selenium)
+                                temp = crnt_button.find_element(
+                                    By.XPATH, "*").find_element(
+                                    By.XPATH, "*")
+                                # If the button is the close button, click it and wait
+                                if ("close" in str(temp.get_attribute("class"))):
+                                    temp.click()
+                                    self.cmc.implicitly_wait(3)
+                        except:
+                            pass
 
                         print(f"News Context loaded. \n--- {unformatted.text}")
                     except Exception as e:  # If the news content failed to load, catch exception
