@@ -22,6 +22,7 @@ if __name__ == '__main__':
     cmc_api = cmc.API()
     try:
         cmc_api.start_service()  # Start service to get news
+        send_ntfy("Program has started", f"{datetime.now()}", tags="computer")
         time.sleep(5)
         news = cmc_api.get_news()  # Get news
 
