@@ -27,12 +27,13 @@ class API:
         self.cmc_url = "https://platform.cmcmarkets.com/#/login"
 
         # TODO Use database later for keywords
-        self.keywords = [      # List of keywords for news filtering
-            "S&P-ASX 200 ST",  # Australia 200 - Cash
-            "FTSE 100 MT",     # UK 100 - Cash
-            "Dow Jones ST",    # US 30 - Cash
-            "Hang Seng ST",    # HONG KONG 50 - Cash
-            "Nasdaq 100 ST"    # US NDAQ 100 - Cash
+        self.keywords = [           # List of keywords for news filtering
+            "S&P-ASX 200 ST",       # Australia 200 - Cash
+            "FTSE 100 ST",          # UK 100 - Cash
+            "Dow Jones ST",         # US 30 - Cash
+            "Nasdaq 100 ST"         # US SPX 500 - Cash
+            "Brent (ICE) (X3) ST"   # Crude Oil Brent - Cash
+            "Hang Seng ST",         # HONG KONG 50 - Cash
         ]
 
     # Use //*[@id="#####"] for ID element search
@@ -108,7 +109,7 @@ class API:
                 pass
 
             # Wait for the main page to load (cant use wait_for_element because the elements are unique)
-            self.cmc.implicitly_wait(45)
+            self.cmc.implicitly_wait(55)
 
             # Check if the main page has loaded by checking if there are more than 10 news items
             if len(self.cmc.find_elements(By.CLASS_NAME, 'news-list-item')) > 10:
@@ -140,6 +141,10 @@ class API:
             raw_news = self.cmc.find_elements(By.CLASS_NAME, 'news-list-item')
             print(f"Number of news items: {len(raw_news)}\nGetting news...")
             for unformatted in raw_news:
+                #! EXPERIMENTAL
+                if unformatted.text[0] not in ["S", "F", "D", "N", "B", "H"]:
+                    continue
+
                 # Get the 2 children of the news item, the title and the datetime as a list
                 self.news_item = unformatted.find_elements(By.XPATH, '*')
 
@@ -151,6 +156,10 @@ class API:
                     # Get the title and datetime from the list
                     self.news_item_title = self.news_item[0].text
                     self.news_item_datetime = self.news_item[1].text
+
+                    # Get the market from the title
+                    self.news_item_market = [
+                        k for k in self.keywords if k in self.news_item_title][0]
 
                     # Click the news item to load the content
                     try:
@@ -169,6 +178,7 @@ class API:
 
                     # Add the news item to the filtered news dict, with the unique datetime as the key
                     self.filtered_news.append({
+                        "market": self.news_item_market,
                         "datetime": self.news_item_datetime,
                         "title": self.news_item_title,
                         "content": self.news_item_content

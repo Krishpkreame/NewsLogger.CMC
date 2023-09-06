@@ -9,7 +9,7 @@ def send_ntfy(title, msg, tags="warning"):  # Send notification to my phone
     requests.post(
         "https://ntfy.sh/krish_patel_cmc_news_logger",  # Custom url for updates
         # Send date and time with message
-        data=f"{datetime.now().strftime('%d/%m/%y %H:%M')}\n{msg}",
+        data=f"{msg}",
         headers={
             "Title": title,  # Title of notification
             "Tags": tags  # Adds a warning icon to the notification
@@ -37,9 +37,9 @@ if __name__ == '__main__':
             print()
 
             # Filepath cleanup and formatting
-            filepath = ''.join(
-                char for char in f"{item['title']}_____{item['datetime']}" if char.isalnum() or char in [" ", ".", "_"])
-            filepath = f"./News/{filepath}.txt"
+            filepath = ''.join(  # ! Temporary fix for file path
+                char for char in f"{item['title'].replace(' ', '_').lower()}_{item['datetime']}" if char.isalnum() or char in [" ", ".", "_"])
+            filepath = f"./News/{item['market'].replace(' ', '_').lower()}/{filepath}.txt"
 
             with open(filepath, "w") as f:  # Write content to file
                 f.write(item["content"])
@@ -57,6 +57,6 @@ if __name__ == '__main__':
         cmc_api.stop_service()
 
     except Exception as e:
-        print(e)
         send_ntfy("Error Occured", str(e))
         cmc_api.stop_service()
+        raise e
