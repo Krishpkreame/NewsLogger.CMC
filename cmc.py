@@ -27,14 +27,14 @@ class API:
         self.cmc_url = "https://platform.cmcmarkets.com/#/login"
 
         # TODO Use database later for keywords
-        self.keywords = [           # List of keywords for news filtering
-            "S&P-ASX 200 ST",       # Australia 200 - Cash
-            "FTSE 100 ST",          # UK 100 - Cash
-            "Dow Jones ST",         # US 30 - Cash
-            "Nasdaq 100 ST"         # US SPX 500 - Cash
-            "Brent (ICE) (X3) ST"   # Crude Oil Brent - Cash
-            "Hang Seng ST",         # HONG KONG 50 - Cash
-        ]
+        # List of keywords for news filtering
+        self.keywords = [
+            "S&P-ASX 200 ST",
+            "FTSE 100 ST",
+            "Dow Jones ST",
+            "Nasdaq 100 ST",
+            "Brent (ICE) (X3) ST",
+            "Hang Seng ST"]
 
     # Use //*[@id="#####"] for ID element search
     def click_element(self, xpath_str):
@@ -140,16 +140,15 @@ class API:
             # Get the raw news items using class name
             raw_news = self.cmc.find_elements(By.CLASS_NAME, 'news-list-item')
             print(f"Number of news items: {len(raw_news)}\nGetting news...")
+            self.news_counter = 0
             for unformatted in raw_news:
-                #! EXPERIMENTAL
-                if unformatted.text[0] not in ["S", "F", "D", "N", "B", "H"]:
-                    continue
-
+                self.news_counter += 1
                 # Get the 2 children of the news item, the title and the datetime as a list
                 self.news_item = unformatted.find_elements(By.XPATH, '*')
 
                 # Print the last 33 characters of the news item (time and end of title from debug)
-                print(unformatted.text.replace("\n", " ----- "))
+                print(str(self.news_counter) + "/" + str(len(raw_news)), unformatted.text.replace(
+                    "\n", " ----- "), sep=": ")
 
                 # If the title contains any of the keywords, add it to the filtered news
                 if any(keyword in self.news_item[0].text for keyword in self.keywords):
@@ -168,7 +167,8 @@ class API:
                         self.cmc.implicitly_wait(2)
                         # Get the news content
                         self.news_item_content = self.cmc.find_element(
-                            By.CLASS_NAME, 'news-contents').text
+                            By.CLASS_NAME, 'news-contents').text.split("---")[0]
+
                         print(
                             f"News Context loaded. \n--- {unformatted.text}")
                     except Exception as e:  # If the news content failed to load, catch exception

@@ -28,19 +28,19 @@ if __name__ == '__main__':
         # Print news to console and save to file
         for item in news:
             print("--------------------------------------------------")
-            print("_____ ", end="")
-            print(item["datetime"])
-            print("_____ ", end="")
-            print(item["title"])
-            print("_____ ", end="")
-            print(item["content"])
-            print()
-
+            print(item)
             # Filepath cleanup and formatting
-            filepath = ''.join(  # ! Temporary fix for file path
-                char for char in f"{item['title'].replace(' ', '_').lower()}_{item['datetime']}" if char.isalnum() or char in [" ", ".", "_"])
-            filepath = f"./News/{item['market'].replace(' ', '_').lower()}/{filepath}.txt"
+            marketpath = item["market"].replace(" ", "_").lower()
+            marketpath = "".join(
+                [c for c in marketpath if c.isalpha() or c.isdigit() or c in ["_", "."]])
 
+            filenamepath = item["title"].replace(
+                " ", "_").lower() + "_" + item["datetime"]
+            filenamepath = "".join(
+                [b for b in filenamepath if b.isalpha() or b.isdigit() or b in ["_", "."]])
+
+            filepath = f"./News/{marketpath}/{filenamepath}.txt"
+            print(filepath)
             with open(filepath, "w") as f:  # Write content to file
                 f.write(item["content"])
 
