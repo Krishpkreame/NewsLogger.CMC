@@ -171,7 +171,7 @@ class API:
                         self.cmc.implicitly_wait(3)
                         # Get the news content
                         self.news_item_content = self.cmc.find_element(
-                            By.CLASS_NAME, 'news-contents').text.split("---")[-1]
+                            By.CLASS_NAME, 'news-contents').text.split("---")[0]
                         # Wait before closing the news
                         self.cmc.implicitly_wait(2)
                         # Get the close buttons after opening the news
