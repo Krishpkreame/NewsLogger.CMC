@@ -2,10 +2,22 @@ import cmc  # api for cmc to get news
 import os
 from datetime import datetime
 import time
+import requests
+
+
+def send_ntfy(title, msg, tags="warning"):  # Send notification to my phone
+    requests.post(
+        "https://ntfy.sh/krish_patel_cmc_news_logger",  # Custom url for updates
+        # Send date and time with message
+        data=f"{datetime.now().strftime('%d/%m/%y %H:%M')}\n{msg}",
+        headers={
+            "Title": title,  # Title of notification
+            "Tags": tags  # Adds a warning icon to the notification
+        })
+
 
 # This is a test file to see if the api works and saves as txt files.
 # TODO - Use Database for saving news
-
 if __name__ == '__main__':
     cmc_api = cmc.API()
     try:
@@ -16,11 +28,11 @@ if __name__ == '__main__':
         # Print news to console and save to file
         for item in news:
             print("--------------------------------------------------")
-            print("_____", end="")
+            print("_____ ", end="")
             print(item["datetime"])
-            print("_____", end="")
+            print("_____ ", end="")
             print(item["title"])
-            print("_____", end="")
+            print("_____ ", end="")
             print(item["content"])
             print()
 
@@ -37,8 +49,14 @@ if __name__ == '__main__':
                 item["datetime"], "%d.%m.%Y %H:%M").timestamp()
             os.utime(filepath, (wanted_time, wanted_time))
 
+        send_ntfy(
+            "News Updated", f"News has been updated\n{len(news)} new news item added", tags="tada")
         cmc_api.stop_service()  # Stop service after getting news
+    except KeyboardInterrupt:
+        send_ntfy("Debugging", "Keyboard Interrupt", tags="")
+        cmc_api.stop_service()
 
-    except BaseException as e:
+    except Exception as e:
         print(e)
+        send_ntfy("Error Occured", str(e))
         cmc_api.stop_service()
