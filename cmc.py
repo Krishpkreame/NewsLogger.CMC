@@ -109,7 +109,7 @@ class API:
                 pass
 
             # Wait for the main page to load (cant use wait_for_element because the elements are unique)
-            self.cmc.implicitly_wait(55)
+            self.cmc.implicitly_wait(15)  # ! Make 45
 
             # Check if the main page has loaded by checking if there are more than 10 news items
             if len(self.cmc.find_elements(By.CLASS_NAME, 'news-list-item')) > 10:
@@ -135,6 +135,10 @@ class API:
     # Get the news from CMC Markets, filter and format it
     def get_news(self):
         self.filtered_news = []
+
+        # Get the close buttons before opening anything so see the difference
+        close_buttons_before = self.cmc.find_elements(
+            By.CLASS_NAME, 'window-header__action-button ')
 
         if self.cmc_started and self.cmc_loggedin:  # If CMC is running and logged in, get the news
             # Get the raw news items using class name
@@ -167,10 +171,24 @@ class API:
                         self.cmc.implicitly_wait(2)
                         # Get the news content
                         self.news_item_content = self.cmc.find_element(
-                            By.CLASS_NAME, 'news-contents').text.split("---")[0]
+                            By.CLASS_NAME, 'news-contents').text.split("---")[-1]
+                        # Wait before closing the news
+                        self.cmc.implicitly_wait(2)
+                        # Get the close buttons after opening the news
+                        close_buttons_after = self.cmc.find_elements(
+                            By.CLASS_NAME, 'window-header__action-button ')
 
-                        print(
-                            f"News Context loaded. \n--- {unformatted.text}")
+                        # Find all buttons that were not there before opening the news
+                        for crnt_button in list(set(close_buttons_before) ^ set(close_buttons_after)):
+                            # Do 2 children down, (workaround because of bug in selenium)
+                            temp = crnt_button.find_element(
+                                By.XPATH, "*").find_element(
+                                By.XPATH, "*")
+                            # If the button is the close button, click it
+                            if ("close" in str(temp.get_attribute("class"))):
+                                temp.click()
+
+                        print(f"News Context loaded. \n--- {unformatted.text}")
                     except Exception as e:  # If the news content failed to load, catch exception
                         self.news_item_content = "Placeholder"
                         print(
