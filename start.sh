@@ -3,7 +3,11 @@ cd /cmcnews/NewsLogger.CMC/
 git pull
 pip install -r requirements.txt
 sleep 1
-clear
+echo ""
+echo ""
+echo "---------- CMC NEWS LOGGER ----------"
+echo ""
+echo ""
 python3 main.py
 
 

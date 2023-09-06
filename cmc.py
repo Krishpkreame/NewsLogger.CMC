@@ -26,7 +26,7 @@ class API:
         self.firefox_options = webdriver.FirefoxOptions()
         self.cmc_url = "https://platform.cmcmarkets.com/#/login"
 
-        # ! Use database later for keywords
+        # TODO Use database later for keywords
         self.keywords = [      # List of keywords for news filtering
             "S&P-ASX 200 ST",  # Australia 200 - Cash
             "FTSE 100 MT",     # UK 100 - Cash
@@ -95,7 +95,7 @@ class API:
                 # Wait for the account select page to load
                 if self.wait_for_element("""
                     /html/body/div[1]/div/div/div/div/section/cmc-account-options/div/div[3]/div[2]/div[2]/div[2]/div[4]/span
-                    """, seconds=15):  # ! This is a placeholder - CHANGE TO 20 or higher for production
+                    """, seconds=25):
                     print("CMC account selection page needed.")
                 else:
                     raise TimeoutError
@@ -108,9 +108,7 @@ class API:
                 pass
 
             # Wait for the main page to load (cant use wait_for_element because the elements are unique)
-            # ! This is a placeholder - CHANGE TO 45 or higher for production
-            self.cmc.implicitly_wait(15)
-            # ! This is a placeholder - CHANGE TO 45 or higher for production
+            self.cmc.implicitly_wait(45)
 
             # Check if the main page has loaded by checking if there are more than 10 news items
             if len(self.cmc.find_elements(By.CLASS_NAME, 'news-list-item')) > 10:
@@ -145,7 +143,8 @@ class API:
                 # Get the 2 children of the news item, the title and the datetime as a list
                 self.news_item = unformatted.find_elements(By.XPATH, '*')
 
-                print(unformatted.text[-45:])  # ! REMOVE THIS LATER
+                # Print the last 33 characters of the news item (time and end of title from debug)
+                print(unformatted.text.replace("\n", " ----- "))
 
                 # If the title contains any of the keywords, add it to the filtered news
                 if any(keyword in self.news_item[0].text for keyword in self.keywords):
