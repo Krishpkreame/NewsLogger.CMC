@@ -91,7 +91,6 @@ class API:
                 /html/body/div[1]/div/cmc-login/div/section/div[1]/div[1]/form/div[4]/input
                 """)
 
-            # Sometimes CMC asks for account selection, if needed select the account otherwise, wait for 20 second timeout
             try:
                 # Wait for the account select page to load
                 if self.wait_for_element("""
@@ -102,11 +101,13 @@ class API:
                     raise TimeoutError
                 # Select the account
                 self.click_element("""
-                    /html/body/div[1]/div/div/div/div/section/cmc-account-options/div/div[3]/div[2]/div[2]/div[2]/div[4]/span
+                    /html/body/div[1]/div/div/div/div/section/cmc-account-options/div/div[3]/div[1]/button[2]
                     """)
             except TimeoutError:
                 print("CMC account tab switch not needed.")
                 pass
+
+            self.cmc.implicitly_wait(15)
 
             # Sometimes CMC asks for account selection, if needed select the account otherwise, wait for 20 second timeout
             try:
@@ -126,7 +127,7 @@ class API:
                 pass
 
             # Wait for the main page to load (cant use wait_for_element because the elements are unique)
-            self.cmc.implicitly_wait(15)  # ! Make 45
+            self.cmc.implicitly_wait(45)  # ! Make 45
 
             # Check if the main page has loaded by checking if there are more than 10 news items
             if len(self.cmc.find_elements(By.CLASS_NAME, 'news-list-item')) > 10:
