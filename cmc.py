@@ -95,6 +95,23 @@ class API:
             try:
                 # Wait for the account select page to load
                 if self.wait_for_element("""
+                    /html/body/div[1]/div/div/div/div/section/cmc-account-options/div/div[3]/div[1]/button[2]
+                    """, seconds=25):
+                    print("CMC account tab switch needed.")
+                else:
+                    raise TimeoutError
+                # Select the account
+                self.click_element("""
+                    /html/body/div[1]/div/div/div/div/section/cmc-account-options/div/div[3]/div[2]/div[2]/div[2]/div[4]/span
+                    """)
+            except TimeoutError:
+                print("CMC account tab switch not needed.")
+                pass
+
+            # Sometimes CMC asks for account selection, if needed select the account otherwise, wait for 20 second timeout
+            try:
+                # Wait for the account select page to load
+                if self.wait_for_element("""
                     /html/body/div[1]/div/div/div/div/section/cmc-account-options/div/div[3]/div[2]/div[2]/div[2]/div[4]/span
                     """, seconds=25):
                     print("CMC account selection page needed.")
