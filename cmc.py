@@ -1,7 +1,7 @@
 # Environment variables and datetime
 import os
 from datetime import datetime
-
+import time
 # For web scraping
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -14,6 +14,7 @@ from selenium.webdriver.support import expected_conditions as EC
 class API:
     # Initialize class variables and environment variables
     def __init__(self):
+        self.__account_name = "Quality Kiwi Shop Ltd"
         self.cmc_started = False  # Flag to check if CMC Markets is running
         self.cmc_loggedin = False  # Flag to check if logged into CMC Markets
         # Get Selenium URL from environment variable
@@ -112,30 +113,31 @@ class API:
             # Sometimes CMC asks for account selection, if needed select the account otherwise, wait for 20 second timeout
             try:
                 # Wait for the account select page to load
-                if self.wait_for_element("""
-                    /html/body/div[1]/div/div/div/div/section/cmc-account-options/div/div[3]/div[2]/div[2]/div[2]/div[4]/span
-                    """, seconds=25):
-                    print("CMC account selection page needed.")
-                else:
-                    raise TimeoutError
-                # Select the account
-                self.click_element("""
-                    /html/body/div[1]/div/div/div/div/section/cmc-account-options/div/div[3]/div[2]/div[2]/div[2]/div[4]/span
-                    """)
-            except TimeoutError:
-                print("CMC account selection page not needed.")
+                span_list = self.cmc.find_elements(By.TAG_NAME, "span")
+                for span in span_list:
+                    if self.__account_name in span.text:
+                        span.click()
+                        print("CMC account selection and account selected")
+                        raise ValueError
+                raise TimeoutError("Account not found")
+            except ValueError:
                 pass
 
-            # Wait for the main page to load (cant use wait_for_element because the elements are unique)
-            self.cmc.implicitly_wait(45)  # ! Make 45
-
-            # Check if the main page has loaded by checking if there are more than 10 news items
-            if len(self.cmc.find_elements(By.CLASS_NAME, 'news-list-item')) > 10:
-                print("The main page news loaded.")
-                self.cmc_loggedin = True  # Set the flag to True
-            else:
-                raise Exception(
-                    f"CMC main page failed to load.")  # Raise exception if the main page failed to load
+            # Check if the main page has loaded by checking if there are more than 501 news items
+            # if not wait and try again
+            for time_ran in range(10):
+                if self.cmc_loggedin == True:  # If the flag is already True, break the loop
+                    break
+                # Wait for the main page to load (cant use wait_for_element because the elements are unique)
+                time.sleep(30)
+                if len(self.cmc.find_elements(By.CLASS_NAME, 'news-list-item')) > 399:
+                    print("The main page news loaded.")
+                    self.cmc_loggedin = True  # Set the flag to True
+                else:
+                    print(
+                        "The main page news failed to load, trying again. attempt: " + str(time_ran))
+            if not self.cmc_loggedin:
+                raise Exception("CMC News failed to load in.")
         else:
             # Raise exception if CMC is already running
             raise Exception("CMC News service is already running.")
