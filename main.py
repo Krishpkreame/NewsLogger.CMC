@@ -67,7 +67,7 @@ if __name__ == '__main__':
             try:
                 # Get time of news and convert to timestamp
                 wanted_time = datetime.strptime(
-                    item["datetime"], "%d.%m.%Y %H:%M").timestamp()
+                    item["datetime"], "%d.%m.%Y %H:%M")
                 # Connect to database and insert news
                 with connection.cursor() as cursor:
                     # SQL query to insert news, (newstime in correct format, stock, content)
