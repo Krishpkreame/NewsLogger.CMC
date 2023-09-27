@@ -4,6 +4,11 @@ from datetime import datetime
 import time
 import requests
 
+# For MySQL database
+import json
+import pymysql
+dbconf = json.loads(os.environ.get("MYSQL_DB1_JSON_CONN", ""))
+
 
 def send_ntfy(title, msg, tags="warning"):  # Send notification to my phone
     requests.post(
@@ -17,16 +22,17 @@ def send_ntfy(title, msg, tags="warning"):  # Send notification to my phone
 
 
 # This is a test file to see if the api works and saves as txt files.
-# TODO - Use Database for saving news
 if __name__ == '__main__':
     cmc_api = cmc.API()
     try:
-        cmc_api.start_service()  # Start service to get news
+        # Start service to get news
+        cmc_api.start_service()
         send_ntfy("Program has started", f"{datetime.now()}", tags="computer")
         time.sleep(5)
         news = cmc_api.get_news()  # Get news
 
-        # Print news to console and save to file
+        # ! Print news to console and save to file  ---  BACKUP FOR REDUNDANCY
+        print(f"Adding to (Backup) news folder...")
         for item in news:
             print("--------------------------------------------------")
             print(item)
@@ -49,6 +55,39 @@ if __name__ == '__main__':
             wanted_time = datetime.strptime(
                 item["datetime"], "%d.%m.%Y %H:%M").timestamp()
             os.utime(filepath, (wanted_time, wanted_time))
+
+        print(f"Adding to database... in 5")
+        time.sleep(5)
+        # MySQL database setup
+        connection = pymysql.connect(host=dbconf["host"], user=dbconf["user"],
+                                     password=dbconf["password"], db=dbconf["database"],
+                                     charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
+        # Add news to database
+        for item in news:
+            try:
+                # Get time of news and convert to timestamp
+                wanted_time = datetime.strptime(
+                    item["datetime"], "%d.%m.%Y %H:%M").timestamp()
+                # Connect to database and insert news
+                with connection.cursor() as cursor:
+                    # SQL query to insert news, (newstime in correct format, stock, content)
+                    sql = "INSERT INTO `newslogs` (`newstime`, `stock`, `content`) VALUES (%s, %s, %s)"
+                    cursor.execute(sql, (
+                        wanted_time.strftime('%Y-%m-%d %H:%M:%S'),
+                        item["market"],
+                        item["content"]))
+            # If Error is for duplicate entry, skip
+            except pymysql.err.IntegrityError as e:
+                if e.args[0] == 1062:
+                    print(str(item["datetime"]) + "Duplicate entry, skipping")
+                    pass
+                else:
+                    raise e
+            finally:
+                connection.commit()  # Commit changes to database
+        # Close connection to database after all news has been added
+        connection.commit()
+        connection.close()
 
         send_ntfy(
             "News Updated", f"News has been updated\n{len(news)} new news item added", tags="tada")
