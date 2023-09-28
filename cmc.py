@@ -24,10 +24,9 @@ class API:
         # Get CMC password from environment variable
         self.password = os.environ.get("CMC_PASSWORD", "")
 
-        self.firefox_options = webdriver.FirefoxOptions()
+        self.browser_options = webdriver.ChromeOptions()
         self.cmc_url = "https://platform.cmcmarkets.com/#/login"
 
-        # TODO Use database later for keywords
         # List of keywords for news filtering
         self.keywords = [
             "S&P-ASX 200 ST",
@@ -71,7 +70,7 @@ class API:
             # Start the browser
             self.cmc = webdriver.Remote(
                 command_executor=self.selenium_url,
-                options=self.firefox_options)
+                options=self.browser_options)
             # Go to the CMC Markets login page
             self.cmc.get(self.cmc_url)
             # Wait for the page to load and zooming out
