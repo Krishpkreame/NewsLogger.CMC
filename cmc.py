@@ -13,7 +13,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class API:
     # Initialize class variables and environment variables
-    def __init__(self):
+    def __init__(self, __keywords=None):
         self.__account_name = "Quality Kiwi Shop Ltd"
         self.cmc_started = False  # Flag to check if CMC Markets is running
         self.cmc_loggedin = False  # Flag to check if logged into CMC Markets
@@ -29,13 +29,7 @@ class API:
         self.cmc_url = "https://platform.cmcmarkets.com/#/login"
 
         # List of keywords for news filtering
-        self.keywords = [
-            "S&P-ASX 200 ST",
-            "FTSE 100 ST",
-            "Dow Jones ST",
-            "Nasdaq 100 ST",
-            "Brent (ICE) (X3) ST",
-            "Hang Seng ST"]
+        self.keywords = __keywords
 
     # Use //*[@id="#####"] for ID element search
     def click_element(self, xpath_str):

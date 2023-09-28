@@ -21,9 +21,22 @@ def send_ntfy(title, msg, tags="warning"):  # Send notification to my phone
         })
 
 
+def get_keywords():  # Get keywords from database
+    # MySQL database setup
+    connection = pymysql.connect(
+        host=dbconf["host"], user=dbconf["user"],
+        password=dbconf["password"], db=dbconf["database"],
+        charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
+    # Get keywords from database
+    with connection.cursor() as cursor:
+        sql = "SELECT * FROM `cmcinfo`"
+        cursor.execute(sql)
+        return [row['keywords'] for row in cursor]
+
+
 # This is a test file to see if the api works and saves as txt files.
 if __name__ == '__main__':
-    cmc_api = cmc.API()
+    cmc_api = cmc.API(get_keywords())  # New cmc instance with keywords
     try:
         # Start service to get news
         cmc_api.start_service()
