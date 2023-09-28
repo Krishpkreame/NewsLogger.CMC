@@ -25,6 +25,7 @@ class API:
         self.password = os.environ.get("CMC_PASSWORD", "")
 
         self.browser_options = webdriver.ChromeOptions()
+        self.browser_options.add_argument("--start-maximized")
         self.cmc_url = "https://platform.cmcmarkets.com/#/login"
 
         # List of keywords for news filtering
@@ -75,7 +76,6 @@ class API:
             self.cmc.get(self.cmc_url)
             # Wait for the page to load and zooming out
             self.cmc.execute_script("document.body.style.zoom='50%'")
-
             # Wait for the login page to load
             if self.wait_for_element('//*[@id="username"]'):
                 print("Login page loaded.\n--- waiting for selection...")
