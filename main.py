@@ -85,10 +85,9 @@ if __name__ == '__main__':
                     raise e
             finally:
                 connection.commit()  # Commit changes to database
-                connection.close()  # Close database connection
-        # # Close connection to database after all news has been added
-        # connection.commit()
-        # connection.close()
+        # Close connection to database after all news has been added
+        connection.commit()
+        connection.close()
 
         send_ntfy(
             "News Updated", f"News has been updated\n{len(news)} new news item added", tags="tada")
