@@ -29,9 +29,9 @@ def get_keywords():  # Get keywords from database
         charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
     # Get keywords from database
     with connection.cursor() as cursor:
-        sql = "SELECT * FROM `cmcinfo`"
+        sql = "SELECT * FROM `input_info`"
         cursor.execute(sql)
-        return [row['keywords'] for row in cursor]
+        return [row['cmc_keyword'] for row in cursor]
 
 
 # This is a test file to see if the api works and saves as txt files.

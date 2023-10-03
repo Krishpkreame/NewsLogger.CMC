@@ -183,8 +183,10 @@ class API:
                         # Wait for the news content to load
                         self.cmc.implicitly_wait(3)
                         # Get the news contents
-                        self.news_item_content = self.cmc.find_element(
+                        temp1 = self.cmc.find_element(
                             By.CLASS_NAME, 'news-contents').text
+                        temp1 = temp1.split("---")[0]
+                        self.news_item_content = temp1.split("Pivot: ")[-1]
                         # Wait before closing the news
                         self.cmc.implicitly_wait(2)
                         # Get the close buttons after opening the news
