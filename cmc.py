@@ -24,7 +24,7 @@ class API:
         # Get CMC password from environment variable
         self.password = os.environ.get("CMC_PASSWORD", "")
 
-        self.browser_options = webdriver.ChromeOptions()
+        self.browser_options = webdriver.FirefoxOptions()
         self.browser_options.add_argument("--start-maximized")
         self.cmc_url = "https://platform.cmcmarkets.com/#/login"
 
