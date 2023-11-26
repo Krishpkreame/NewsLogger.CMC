@@ -52,6 +52,7 @@ class API:
             WebDriverWait(self.cmc, seconds).until(
                 EC.presence_of_element_located((By.XPATH, xpath_str)))
             self.cmc.implicitly_wait(3)
+            time.sleep(3)
             return True
         except Exception as e:  # If the element does not load, catch exception
             print(e)
