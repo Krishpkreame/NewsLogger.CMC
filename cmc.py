@@ -107,7 +107,7 @@ class API:
                 pass
 
             self.cmc.implicitly_wait(15)
-
+            time.sleep(3)
             # Sometimes CMC asks for account selection, if needed select the account otherwise, wait for 20 second timeout
             try:
                 # Wait for the account select page to load
