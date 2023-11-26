@@ -2,3 +2,4 @@ selenium
 requests
 pymysql
 cryptography
+pickle

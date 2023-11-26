@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 import time
 # For web scraping
+import pickle
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
@@ -24,8 +25,10 @@ class API:
         # Get CMC password from environment variable
         self.password = os.environ.get("CMC_PASSWORD", "")
 
-        self.browser_options = webdriver.FirefoxOptions()
-        self.browser_options.add_argument("--start-maximized")
+        self.browser_options = webdriver.ChromeOptions()
+        self.browser_options.add_argument('--start-maximized')
+        self.browser_options.add_argument('==profile-directory=Default')
+        self.browser_options.add_argument('==user-data-dir=chrome-data')
         self.cmc_url = "https://platform.cmcmarkets.com/#/login"
 
         # List of keywords for news filtering
@@ -67,6 +70,7 @@ class API:
             self.cmc = webdriver.Remote(
                 command_executor=self.selenium_url,
                 options=self.browser_options)
+
             # Go to the CMC Markets login page
             self.cmc.get(self.cmc_url)
             # Wait for the page to load and zooming out
@@ -139,6 +143,7 @@ class API:
     def stop_service(self):
         if self.cmc_started:  # If CMC is running, stop it
             try:
+                time.sleep(1)
                 self.cmc.quit()  # Close the browser
                 self.cmc_started = False  # Set the flag to False
             except Exception as e:
