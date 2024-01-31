@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 import time
 import requests
-
+ 
 # For MySQL database
 import json
 import pymysql
