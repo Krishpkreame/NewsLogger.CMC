@@ -1,4 +1,5 @@
 import os
+import re
 import time
 from exceptions import *
 from selenium import webdriver
@@ -254,10 +255,19 @@ class API:
                     By.XPATH, '//*[@data-testid="news-content-title"]').text
                 self.news_datetime = self.cmc.find_element(
                     By.XPATH, '//*[@data-testid="news-content-date"]').text
-                self.news_content = self.cmc.find_element(
+                self.unformatted_news_content = self.cmc.find_element(
                     By.XPATH, '//*[@data-testid="news-content"]').text
                 self.keyword_in_title = [
                     kw for kw in self.keywords if kw in self.news_title][0]
+
+                # Format the news content
+                self.regex_for_news_content = re.search(
+                    r"Pivot:(.*?)---", self.unformatted_news_content, re.DOTALL)
+                if self.regex_for_news_content:
+                    self.news_content = f"Pivot: {self.regex_for_news_content.group(1).strip()}"
+                else:
+                    raise CMCError(
+                        "News content format error, incorrect news found")
 
                 # Add the news item to the filtered news dict, with the unique datetime as the key
                 self.final_news.append({
