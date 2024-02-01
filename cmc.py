@@ -249,28 +249,23 @@ class API:
                 news_artical.click()
                 time.sleep(2)
 
-                # Get the news title, datetime and content
+                # Get the news title, datetime, content and keyword
                 self.news_title = self.cmc.find_element(
                     By.XPATH, '//*[@data-testid="news-content-title"]').text
                 self.news_datetime = self.cmc.find_element(
                     By.XPATH, '//*[@data-testid="news-content-date"]').text
                 self.news_content = self.cmc.find_element(
                     By.XPATH, '//*[@data-testid="news-content"]').text
-                #! fix soon
-                # # Check if the keyword is in the title
-                # self.keyword_in_title = next(
-                #     (kw for kw in self.keywords if kw in self.news_title_elem.text), None)
-                # if not self.keyword_in_title:
-                #     raise CMCError("Could not find keyword in title")
+                self.keyword_in_title = [
+                    kw for kw in self.keywords if kw in self.news_title_elem.text][0]
 
                 # Add the news item to the filtered news dict, with the unique datetime as the key
                 self.final_news.append({
-                    "market": "Gay",
+                    "market": self.keyword_in_title,
                     "datetime": self.news_datetime,
                     "title": self.news_title,
                     "content": self.news_content
                 })
-                print(self.final_news)  # ! temp
 
             time.sleep(3)
             self.close_new_windows()
