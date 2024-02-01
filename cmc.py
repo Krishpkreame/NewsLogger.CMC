@@ -186,7 +186,7 @@ class API:
                 "CMC News service is not running. Or is not logged in.")
 
         # Create filtered news list to return once done
-        self.filtered_news = []
+        self.final_news = []
 
         # Loop over all markets
         for market in self.all_markets:
@@ -264,15 +264,15 @@ class API:
                 #     raise CMCError("Could not find keyword in title")
 
                 # Add the news item to the filtered news dict, with the unique datetime as the key
-                self.filtered_news.append({
+                self.final_news.append({
                     "market": "Gay",
                     "datetime": self.news_datetime_elem.text,
                     "title": self.news_title_elem.text,
                     "content": self.news_content_elem.text
                 })
-                print(self.filtered_news)  # ! temp
+                print(self.final_news)  # ! temp
 
             time.sleep(3)
             self.close_new_windows()
             time.sleep(3)
-            return self.filtered_news
+            return self.final_news
