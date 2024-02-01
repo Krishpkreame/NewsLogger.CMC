@@ -1,6 +1,7 @@
 import requests
 from datetime import datetime
 import os
+from exceptions import *
 
 
 def send_notification(title, msg=datetime.now(), tags="warning"):
@@ -8,7 +9,8 @@ def send_notification(title, msg=datetime.now(), tags="warning"):
     url = os.environ.get("NTFY_URL", "")
     # Check if url is set
     if not url:
-        raise Exception("NTFY_URL environment variable not set")
+        raise EnvironmentVariableNotFound(
+            "NTFY_URL environment variable not set")
 
     # Send notification to my phone
     requests.post(

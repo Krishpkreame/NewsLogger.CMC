@@ -6,16 +6,14 @@ COPY . /app/
 
 RUN pip install -r requirements.txt
 
-COPY ./main.py /app/
-
-EXPOSE 5000
-
 # Add required environment variables
 
 # ENV SELENIUM_URL 
 # ENV CMC_USERNAME 
 # ENV CMC_PASSWORD 
 # ENV MYSQL_DB1_JSON_CONN 
+# ENV NTFY_URL 
 
+RUN chmod +x entrypoint.sh
 
-CMD ["python", "./main.py"]
+CMD ["./entrypoint.sh"]
