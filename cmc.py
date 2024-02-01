@@ -270,4 +270,4 @@ class API:
             time.sleep(3)
             self.close_new_windows()
             time.sleep(3)
-            return self.final_news
+        return self.final_news
