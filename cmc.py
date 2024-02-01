@@ -265,10 +265,10 @@ class API:
 
                 # Add the news item to the filtered news dict, with the unique datetime as the key
                 self.filtered_news.append({
-                    "market": self.keyword_in_title,
-                    "datetime": self.news_datetime_elem,
-                    "title": self.news_title_elem,
-                    "content": self.news_content_elem
+                    "market": self.keyword_in_titlet,
+                    "datetime": self.news_datetime_elem.text,
+                    "title": self.news_title_elem.text,
+                    "content": self.news_content_elem.text
                 })
 
             time.sleep(3)
