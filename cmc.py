@@ -257,7 +257,7 @@ class API:
                 self.news_content = self.cmc.find_element(
                     By.XPATH, '//*[@data-testid="news-content"]').text
                 self.keyword_in_title = [
-                    kw for kw in self.keywords if kw in self.news_title_elem.text][0]
+                    kw for kw in self.keywords if kw in self.news_title][0]
 
                 # Add the news item to the filtered news dict, with the unique datetime as the key
                 self.final_news.append({
