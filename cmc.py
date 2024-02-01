@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import *
 
 
 class API:
@@ -42,9 +43,18 @@ class API:
         print("Btns to close - ", len(self.after_close_btns))
         self.new_close_btns = [
             btn for btn in self.after_close_btns if btn not in self.init_close_btns]
-        for closewrapper in self.new_close_btns:
-            closewrapper.find_element(By.XPATH, "*").click()
-            time.sleep(1)
+        try:
+            for closewrapper in self.new_close_btns[::-1]:
+                closewrapper.find_element(By.XPATH, "*").click()
+                time.sleep(1)
+        except StaleElementReferenceException:
+            self.after_close_btns = self.cmc.find_elements(
+                By.XPATH, '//*[@title="Close"]')
+            print("Buttons after fail - ", len(self.after_close_btns))
+            if len(self.after_close_btns) == 1:
+                pass
+            else:
+                raise CMCError("Could not close tabs properly")
 
     # TODO Redo this function
     def click_element(self, xpath_str):
