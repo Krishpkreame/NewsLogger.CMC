@@ -185,6 +185,9 @@ class API:
             raise NotRunningError(
                 "CMC News service is not running. Or is not logged in.")
 
+        # Create filtered news list to return once done
+        self.filtered_news = []
+
         # Loop over all markets
         for market in self.all_markets:
             # Open the context menu
@@ -240,10 +243,35 @@ class API:
                 if any(keyword in news.text for keyword in self.keywords))
 
             # TODO get news contect and format it
-            for i in list(self.filtered_news):
-                print(i.text[0:60])
-                i.click()
+            for news_artical in list(self.filtered_news):
+                print(self.filtered_news)  # ! temp
+                print(news_artical.text[0:60])  # ! temp
+                # Click the news item and wait to load
+                news_artical.click()
+                time.sleep(2)
+
+                # Get the news title, datetime and content
+                self.news_title_elem = self.cmc.find_element(
+                    By.XPATH, '//*[@data-testid="news-content-title"]')
+                self.news_datetime_elem = self.cmc.find_element(
+                    By.XPATH, '//*[@data-testid="news-content-date"]')
+                self.news_content_elem = self.cmc.find_element(
+                    By.XPATH, '//*[data-testid="news-content"')
+                # Check if the keyword is in the title
+                self.keyword_in_title = next(
+                    (kw for kw in self.keywords if kw in self.news_title_elem.text), None)
+                if not self.keyword_in_title:
+                    raise CMCError("Could not find keyword in title")
+
+                # Add the news item to the filtered news dict, with the unique datetime as the key
+                self.filtered_news.append({
+                    "market": self.keyword_in_title,
+                    "datetime": self.news_datetime_elem,
+                    "title": self.news_title_elem,
+                    "content": self.news_content_elem
+                })
 
             time.sleep(3)
             self.close_new_windows()
             time.sleep(3)
+            return self.filtered_news
