@@ -245,7 +245,6 @@ class API:
 
             # TODO get news contect and format it
             for news_artical in list(self.filtered_news):
-                print(news_artical.text[0:60])  # ! temp
                 # Click the news item and wait to load
                 news_artical.click()
                 time.sleep(2)
